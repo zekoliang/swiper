@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 
 from user import api as user_api
+from social import api as social_api
 
 urlpatterns = [
     url(r'^api/user/submit/phone/$', user_api.submit_phone),
@@ -23,4 +24,12 @@ urlpatterns = [
     url(r'^api/user/get/profile/$',user_api.get_profile),
     url(r'^api/user/edit/profile/$', user_api.edit_profile),
     url(r'^api/user/upload/avater/$', user_api.upload_avatar),
+
+    url(r'^api/social/like/$', social_api.like),
+    url(r'^api/social/dislike/$', social_api.dislike),
+    url(r'^api/social/superlike/$', social_api.superlike),
+    url(r'^api/social/get/recmd/list/$', social_api.get_recommend_list),
+    url(r'^api/social/rewind/$', social_api.rewind),
+    url(r'^api/social/like/me/$', social_api.liked_me),
+    url(r'^api/social/get/top/n/$',social_api.get_top_n)
 ]

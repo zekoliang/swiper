@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     # 'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
+    'social',
+    'vip',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     # 'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'lib.middleware.AuthMiddleware',
+    'lib.middleware.LogicErrMiddleware',
 ]
 
 ROOT_URLCONF = 'swiper.urls'
@@ -128,3 +131,87 @@ STATIC_URL = '/static/'
 # 媒体文件配置
 MEDIA_ROOT = 'medias'
 
+
+# django-redis配置
+CACHES = {
+      "default": {
+      "BACKEND": "django_redis.cache.RedisCache",
+      "LOCATION": "redis://127.0.0.1:6379/1",
+      "OPTIONS": {
+      "CLIENT_CLASS": "django_redis.client.DefaultClient",
+      "PICKLE_VERSION": -1,
+      		}
+  	}
+  }
+
+
+# 日志配置
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    # 格式配置
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s %(module)s.%(funcName)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'verbose': {
+            'format': ('%(asctime)s %(levelname)s [%(process)d-%(threadName)s] '
+                    '%(module)s.%(funcName)s line %(lineno)d: %(message)s'),
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        }
+    },
+    # Handler 配置
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG' if DEBUG else 'WARNING'
+        },
+        'info': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': f'{BASE_DIR}/logs/info.log',  # 日志保存路径
+            'when': 'D',        # 每天切割日志
+            'backupCount': 30,  # 日志保留 30 天
+            'formatter': 'simple',
+            'level': 'INFO',
+        },
+        'error': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': f'{BASE_DIR}/logs/error.log',  # 日志保存路径
+            'when': 'W0',      # 每周一切割日志
+            'backupCount': 4,  # 日志保留 4 周
+            'formatter': 'verbose',
+            'level': 'WARNING',
+        }
+    },
+    # Logger 配置
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+        },
+        'inf': {
+            'handlers': ['info'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'err': {
+            'handlers': ['error'],
+            'propagate': True,
+            'level': 'WARNING',
+        }
+    }
+}
+
+# redis配置
+REDIS = {
+    'Master': {
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': 1
+    },
+    'Slave': {
+        'host': '127.0.0.1',
+        'port': 6379,
+        'db': 1
+    }
+}
