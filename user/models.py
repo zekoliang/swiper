@@ -4,7 +4,9 @@ from django.db import models
 
 from lib.orm import ModelMixin
 
-# Create your models here.
+from social.models import Swipe
+from vip.models import Vip
+
 SEX = (
         ('female', 'female'),
         ('male', 'male'),
@@ -30,8 +32,16 @@ class User(models.Model):
 
     location = models.CharField(max_length=64, verbose_name='常居地')
 
+    # 用户的vip等级
+    vip_id = models.IntegerField(default=1, verbose_name='用户vip等级')
+
+    @property
+    def vip(self):
+        return Vip.get(id=self.vip_id)
+
     def __str__(self):
         return f'<User {self.nickname}>'
+
 
     class Meta:
         db_table = 'user'
@@ -58,15 +68,23 @@ class User(models.Model):
     @property
     def profile(self):
         # 获取用户的profile
-        print(hasattr(self, 'profile_'))
+        # print(hasattr(self, 'profile_'))
         if not hasattr(self, 'profile_'):
-            self.profile_, _ = Profile.objects.get_or_create(id=self.id)
+            self.profile_, _ = Profile.get_or_create(id=self.id)
             print('get from database')
-        print('get from self')
+        # print('get from self')
         return self.profile_
 
 
-class Profile(models.Model, ModelMixin):
+    # 查看喜欢我的人
+    def like_me(self):
+        swipers = Swipe.objects.filter(sid=self.id, mark__in=['like', 'superlike']).only('uid')
+        uid_list = [u.uid for u in swipers]
+        users = User.objects.filter(id__in=uid_list)
+        return users
+
+
+class Profile(models.Model):
     """
     用户个人资料模型
     """
