@@ -7,7 +7,7 @@ cffi==1.12.3
 chardet==3.0.4
 colorama==0.4.1
 decorator==4.4.0
-Django==1.11.18
+Django==1.11.29
 django-redis==4.10.0
 gevent==1.4.0
 greenlet==0.4.15
